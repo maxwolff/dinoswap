@@ -1,0 +1,42 @@
+// pragma solidity ^0.5.12;
+
+// import "./Vault.sol";
+// import "./BoostWallet.sol";
+// import "./ICETH.sol";
+
+// // Send this contract ETH, creates a boost wallet, and sends funds there for further steps
+// contract BoostFactory {
+
+// 	Vault public vault;
+// 	address public ceth;
+	
+// 	constructor(address vault_, address ceth_) public {
+// 		vault = Vault(vault_);
+// 		ceth = ceth_;
+// 	}
+	
+// 	function startBoost
+// 	(
+// 		uint boostAmount, 
+// 		bytes memory tradeData, 
+// 		address tradeTarget, 
+// 		uint compoundBorrowAmount,
+// 		address compoundBorrowToken,
+// 		address owner
+// 	) 
+// 		public payable
+// 	{
+// 		address boostWallet = (new BoostWallet).value(address(this).balance)(ceth, compoundBorrowToken, owner);
+// 		bytes memory callback = abi.encodeWithSignature(
+// 			"init(uint, address, bytes, uint)", 
+// 			boostAmount, 
+// 			tradeTarget, 
+// 			tradeData, 
+// 			compoundBorrowAmount
+// 		);
+// 		// calls init on boost wallet
+// 		vault.borrow(boostAmount, callback, boostWallet);
+// 	}
+
+
+// }
