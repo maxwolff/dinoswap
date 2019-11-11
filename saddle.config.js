@@ -1,8 +1,8 @@
 module.exports = {
-  // solc: "solc",                                         // Solc command to run
-  // solc_args: [],                                        // Extra solc args
-  // build_dir: ".build",                                  // Directory to place built contracts
-  // contracts: "contracts/*.sol",                         // Glob to match contract files
+  solc: "solc",                                         // Solc command to run
+  solc_args: [],                                        // Extra solc args
+  build_dir: ".build",                                  // Directory to place built contracts
+  contracts: "contracts/*.sol",                         // Glob to match contract files
   tests: ['**/tests/*Test.js'],                            // Glob to match test files
   // networks: {                                           // Define configuration for each network
   //   development: {
@@ -29,30 +29,30 @@ module.exports = {
   //       {unlocked: 0}                                   // Else, try to grab first "unlocked" account from provider
   //     ]
   //   },
-  //   test: {
-  //     providers: [
-  //       {env: "PROVIDER"},
-  //       {ganache: {}},                                  // In test mode, connect to a new ganache provider. Any options will be passed to ganache
-  //     ],
-  //     web3: {
-  //       gas: [
-  //         {env: "GAS"},
-  //         {default: "4600000"}
-  //       ],
-  //       gas_price: [
-  //         {env: "GAS_PRICE"},
-  //         {default: "12000000000"}
-  //       ],
-  //       options: {
-  //         transactionConfirmationBlocks: 1,
-  //         transactionBlockTimeout: 5
-  //       }
-  //     },
-  //     accounts: [
-  //       {env: "ACCOUNT"},
-  //       {unlocked: 0}
-  //     ]
-  //   },
+    test: {
+      providers: [
+        {env: "PROVIDER"},
+        {ganache: {}},                                  // In test mode, connect to a new ganache provider. Any options will be passed to ganache
+      ],
+      web3: {
+        gas: [
+          {env: "GAS"},
+          {default: "4600000"}
+        ],
+        gas_price: [
+          {env: "GAS_PRICE"},
+          {default: "12000000000"}
+        ],
+        options: {
+          transactionConfirmationBlocks: 1,
+          transactionBlockTimeout: 5
+        }
+      },
+      accounts: [
+        {env: "ACCOUNT"},
+        {unlocked: 0}
+      ]
+    }
   //   rinkeby: {
   //     providers: [
   //       {env: "PROVIDER"},

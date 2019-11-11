@@ -1,36 +1,32 @@
 pragma solidity ^0.5.12;
 
-import "./IERC20.sol";
+import "./StandardToken.sol";
 import "./SafeMath.sol";
 
 contract IFactory {
     function getExchange(address token1, address token2) external view returns (address);
 }
 
-// NOTE: add inherits ERC20
-
-contract UniforkExchange {
+contract UniforkExchange is StandardToken {
     using SafeMath for * ;
 
-    IERC20 public token1; // prev eth
-    IERC20 public token2;
+    IFactory public factory;
+    ERC20 public token1; // prev eth
+    ERC20 public token2;
 
     string public name = "UniforkExchange 1.0";
     string public symbol = "UNIFORK-V1";
     uint public decimals = 18;
-    uint public totalSupply; // based off of token1 (prev eth)
-    IFactory public factory;
+    // uint public totalSupply_; // based off of token1 (prev eth)
 
-    uint public num = 997;
-    uint public den = 1000;
-
-    mapping (address => uint) balances;
-    mapping (address => mapping (address => address)) public allowances;
+    // 997 / 1000 => 0.997 => 0.3% fee
+    uint public feeConstant = 997;
+    uint public feePrecision = 1000;
 
     constructor(address token1_, address token2_) public {
         require(token1_ != token2_);
-        token1 = IERC20(token1_);
-        token2 = IERC20(token2_);
+        token1 = ERC20(token1_);
+        token2 = ERC20(token2_);
         factory = IFactory(msg.sender);
         // TODO: name / symbol decorations
     }
@@ -51,7 +47,7 @@ contract UniforkExchange {
     {
         require(deadline > getBlockTimestamp());
         require(max_token2 > 0);
-        uint total_liquidity = totalSupply; // i think this assignment is unessecary, just a gas optimization
+        uint total_liquidity = totalSupply_; // i think this assignment is unessecary, just a gas optimization
         if (total_liquidity > 0) {
             require(min_liquidity > 0);
             uint token1_reserve = token1.balanceOf(address(this));
@@ -61,7 +57,7 @@ contract UniforkExchange {
             require(max_token2 > token2_amount);
             require(liquidity_minted >= min_liquidity);
             balances[msg.sender] = balances[msg.sender].add(liquidity_minted);
-            totalSupply = total_liquidity.add(liquidity_minted);
+            totalSupply_ = total_liquidity.add(liquidity_minted);
             require(token1.transferFrom(msg.sender, address(this), token1_amount));
             require(token2.transferFrom(msg.sender, address(this), token2_amount));
             // todo events
@@ -71,7 +67,7 @@ contract UniforkExchange {
             require(factory.getExchange(address(token1), address(token2)) == address(this) || factory.getExchange(address(token2), address(token1)) == address(this));
             uint token2_amount = max_token2;
             uint initial_liquidity = token1_amount; // unecessary assignment?
-            totalSupply = initial_liquidity;
+            totalSupply_ = initial_liquidity;
             balances[msg.sender] = initial_liquidity;
             require(token1.transferFrom(msg.sender, address(this), token1_amount));
             require(token2.transferFrom(msg.sender, address(this), token2_amount));
@@ -93,44 +89,33 @@ contract UniforkExchange {
         require(deadline > getBlockTimestamp());
         require(min_token1 > 0);
         require(min_token2 > 0);
-        require(totalSupply > 0);
-        uint total_liquidity = totalSupply; // again, uneccesary for the sake of gas
+        require(totalSupply_ > 0);
+        uint total_liquidity = totalSupply_; // again, uneccesary for the sake of gas
         // amount / total liq is the portion of the pool you own.
         uint token1_amount = token1.balanceOf(address(this)) * amount / total_liquidity;
         uint token2_amount = token2.balanceOf(address(this)) * amount / total_liquidity;
         require(token1_amount > min_token1);
         require(token2_amount > min_token2);
         balances[msg.sender] -= amount;
-        totalSupply = total_liquidity - amount;
+        totalSupply_ = total_liquidity - amount;
         token1.transfer(msg.sender, token1_amount);
         token2.transfer(msg.sender, token2_amount);
         // XXX do logs
         return (token1_amount, token2_amount);
     }
-
-    function getInputPrice(uint input_amount, uint input_reserve, uint output_reserve) private view {
+    // XXX Add safemath
+    function getInputPrice(uint input_amount, uint input_reserve, uint output_reserve) private view returns (uint) {
         require(input_reserve > 0);
         require(output_reserve > 0);
-        uint input_amount_with_fee = input_amount * num;
+        // if (price model != 0), do pricemodel.getPrice()
+        uint input_amount_with_fee = input_amount * feeConstant;
         uint numerator = input_amount_with_fee * output_reserve;
-        uint denominator = (input_reserve * den) + input_amount_with_fee;
+        uint denominator = (input_reserve * feePrecision) + input_amount_with_fee;
         return numerator / denominator;
     }
-}
 
-// # # @dev Pricing function for converting between ETH and Tokens.
-// # # @param input_amount Amount of ETH or Tokens being sold.
-// # # @param input_reserve Amount of ETH or Tokens (input type) in exchange reserves.
-// # # @param output_reserve Amount of ETH or Tokens (output type) in exchange reserves.
-// # # @return Amount of ETH or Tokens bought.
-// # @private
-// # @constant
-// # def getInputPrice(input_amount: uint256, input_reserve: uint256, output_reserve: uint256) -> uint256:
-// #     assert input_reserve > 0 and output_reserve > 0
-// #     input_amount_with_fee: uint256 = input_amount * 997
-// #     numerator: uint256 = input_amount_with_fee * output_reserve
-// #     denominator: uint256 = (input_reserve * 1000) + input_amount_with_fee
-// #     return numerator / denominator
+
+}
 
 // # # @dev Pricing function for converting between ETH and Tokens.
 // # # @param output_amount Amount of ETH or Tokens being bought.

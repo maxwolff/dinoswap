@@ -4,16 +4,16 @@ import "./UniforkExchange.sol";
 
 contract UniforkExchangeHarness is UniforkExchange {
 	
-	uint public block;
+	uint public time;
 
 	constructor(address token1_, address token2_) 
 		UniforkExchange(token1_, token2_)
 		public {}
 
-	function setBlockTimestamp(uint block_) {
-		block = block_;
+	function setBlockTimestamp(uint time_) public {
+		time = time_;
 	}
-	function getBlockTimestamp() {
-		return block;
+	function getBlockTimestamp() public view returns (uint) {
+		return time;
 	}
 }
