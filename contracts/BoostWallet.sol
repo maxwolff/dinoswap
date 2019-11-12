@@ -1,8 +1,7 @@
 // pragma solidity ^0.5.12;
 
 // import "./SafeMath.sol";
-// import "./ICETH.sol";
-// import "./ICERC20.sol";
+// import "./CTokeInterfaces.sol";
 
 // contract BoostWallet {
 // 	using SafeMath for uint;

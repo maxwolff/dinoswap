@@ -1,10 +1,6 @@
 {
   "dependencies": {
-    "eth-saddle": "^0.0.9",
-    "ganache-core": "^2.5.6",
-    "global": "^4.4.0",
-    "jest": "^24.8.0",
-    "jest-cli": "^24.8.0"
+    "eth-saddle": "^0.0.9"
   },
   "scripts": {
   	"test": "npx saddle compile && npx saddle test",

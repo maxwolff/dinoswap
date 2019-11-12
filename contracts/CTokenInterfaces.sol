@@ -6,3 +6,7 @@ interface ICERC20 {
 	function repayBorrow(uint repayAmount) external returns (uint);
 	function borrow(uint borrowAmount) external returns (uint);
 }
+
+interface ICETH {
+	function mint() external payable;
+}

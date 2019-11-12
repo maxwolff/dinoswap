@@ -1,8 +1,11 @@
 // pragma solidity ^0.5.12;
 
-// import "./Vault.sol";
 // import "./BoostWallet.sol";
 // import "./ICETH.sol";
+
+// interface IFlashBorrow {
+// 	flashBorrow(address borrow_token, uint amount, bytes memory data, address target);
+// }
 
 // // Send this contract ETH, creates a boost wallet, and sends funds there for further steps
 // contract BoostFactory {

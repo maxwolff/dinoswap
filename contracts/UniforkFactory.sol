@@ -2,16 +2,22 @@ pragma solidity ^0.5.12;
 pragma experimental ABIEncoderV2;
 
 import "./UniforkExchange.sol";
-import "./IExchange.sol";
+import "./SafeMath.sol";
+
+contract IExchange {
+    address public token1;
+}
 
 contract UniforkFactory {
-
+    using SafeMath for *;
+    
     struct TokenPair {
         address token1;
         address token2;
     }
 
     uint public tokenCount;
+
     mapping (address => mapping (address => address)) public token_to_exchange;
     mapping (address => TokenPair) public exchange_to_tokenPair;
     mapping (uint => TokenPair) public id_to_token;
