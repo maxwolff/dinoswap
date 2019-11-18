@@ -3,6 +3,7 @@
     "eth-saddle": "^0.0.9"
   },
   "scripts": {
+  	"t": "npx saddle test",
   	"test": "npx saddle compile && npx saddle test",
     "compile": "npx saddle compile"
   }
