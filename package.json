@@ -6,5 +6,6 @@
   	"t": "npx saddle test",
   	"test": "npx saddle compile && npx saddle test",
     "compile": "npx saddle compile"
-  }
+  },
+  "license": "ISC"
 }

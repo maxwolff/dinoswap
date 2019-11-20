@@ -3,7 +3,7 @@ pragma solidity ^0.5.12;
 import "./StandardToken.sol";
 import "./SafeMath.sol";
 
-// TODO: add events, add helpers, revert messages
+// TODO: add events, revert messages
 contract BaseExchange is StandardToken {
     using SafeMath for *;
 

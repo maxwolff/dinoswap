@@ -2,12 +2,11 @@ const {
   sendAndCall
 } = require('./util/Helpers');
 
-const user1 = accounts[0];
-const user2 = accounts[1];
+const future = 1893492061;
 
 async function deployExchange() {
 	const [token1, token2] = await Promise.all([
-		deploy("FaucetToken", ["100", "token1", 18, "TK1"]), // faucet to user 1
+		deploy("FaucetToken", ["100", "token1", 18, "TK1"]), // faucet to acct 1
 		deploy("FaucetToken", ["100", "token2", 18, "TK2"]), 
 	]);
 
@@ -26,9 +25,9 @@ describe("Tests", () => {
 		const {token1, token2, exchange} = await deployExchange();
 		await send(token1.methods.approve(exchange.address, 20));
 		await send(token2.methods.approve(exchange.address, 20));
-		const uniTokenSupply = await sendAndCall(exchange.methods.addLiquidity(10, 10, 10, 10));
+		const uniTokenSupply = await sendAndCall(exchange.methods.addLiquidity(10, 10, 10, future));
 		expect(uniTokenSupply.toNumber()).toEqual(10);
-		const token2Bal = await call(token2.methods.balanceOf(user1)); 
+		const token2Bal = await call(token2.methods.balanceOf(accounts[0])); 
 		expect(token2Bal.toNumber()).toEqual(90);
 	},30000);
 });
