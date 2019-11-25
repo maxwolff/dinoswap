@@ -12,6 +12,8 @@ contract BaseExchange is StandardToken {
 
     uint public decimals = 18;
 
+    event Test(uint a, uint b, uint c, uint d);
+
     constructor(address token1_, address token2_) public {
         require(token1_ != token2_);
         token1 = ERC20(token1_);
@@ -27,9 +29,10 @@ contract BaseExchange is StandardToken {
         external 
         returns (uint) 
     {
+        emit Test(token1_amount, min_liquidity, max_token2, deadline);
+        // return 1;
         require(deadline > block.timestamp, "Timestamp");
-        require(max_token2 > 0);
-        
+        require(max_token2 > 0, "Max token 2 must be greater than 0");
         uint total_liquidity = totalSupply_; // i think this assignment is unessecary, just a gas optimization
         if (total_liquidity > 0) {
             require(min_liquidity > 0);

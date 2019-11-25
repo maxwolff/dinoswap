@@ -2,7 +2,7 @@ pragma solidity ^0.5.12;
 
 import "./BaseExchange.sol";
 
-contract StandardExchange is BaseExchange {
+contract ConstantProductExchange is BaseExchange {
 
 	// eg: 997 / 1000 => 0.3% fee
     uint public fee;
