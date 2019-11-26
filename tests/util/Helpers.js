@@ -1,19 +1,33 @@
 const BigNumber = require("bignumber.js");
+const util = require("util");
 
 const sendAndCall = async sendable => {
 	const returnValue = await call(sendable);
-	await send(sendable);
-	return new BigNumber(returnValue).toString();
+	printEvents(await send(sendable));
+	return returnValue;
 };
 
-const bn = num => {
-	const f = new BigNumber(num);
-	return f.toString();
+// const printSend = async sendable => {};
+
+const printEvents = tx => {
+	Object.keys(tx.events).map(key =>
+		console.log("EVENT ", key, "RETURNED: ", tx.events[key].returnValues)
+	);
 };
-const futureTime = bn(1893492061); // 2030
+
+const str = num => {
+	return new BigNumber(num).toString();
+};
+
+const bnEqual = (expected, actual) => {
+	return expected.toString() === actual.toString();
+};
+
+const futureTime = str(1893492061); // 2030
 
 module.exports = {
 	sendAndCall,
-	bn,
-	futureTime
+	str,
+	futureTime,
+	bnEqual
 };
