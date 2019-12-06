@@ -14,8 +14,8 @@ contract ConstantProductExchange is BaseExchange {
     	public BaseExchange (token1_, token2_) 
     {
         require(token1_ != token2_);
-        token1 = ERC20(token1_);
-        token2 = ERC20(token2_);
+        token1 = IERC20(token1_);
+        token2 = IERC20(token2_);
         fee = fee_;
         feePrecision = feePrecision_;
         symbol = symbol_;

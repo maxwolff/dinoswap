@@ -2,91 +2,21 @@ pragma solidity ^0.5.12;
 
 import "./StandardToken.sol";
 import "./SafeMath.sol";
-
-interface IERC20 {
-    /**
-     * @dev Returns the amount of tokens in existence.
-     */
-    function totalSupply() external view returns (uint256);
-
-    /**
-     * @dev Returns the amount of tokens owned by `account`.
-     */
-    function balanceOf(address account) external view returns (uint256);
-
-    /**
-     * @dev Moves `amount` tokens from the caller's account to `recipient`.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * Emits a {Transfer} event.
-     */
-    function transfer(address recipient, uint256 amount) external returns (bool);
-
-    /**
-     * @dev Returns the remaining number of tokens that `spender` will be
-     * allowed to spend on behalf of `owner` through {transferFrom}. This is
-     * zero by default.
-     *
-     * This value changes when {approve} or {transferFrom} are called.
-     */
-    function allowance(address owner, address spender) external view returns (uint256);
-
-    /**
-     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * IMPORTANT: Beware that changing an allowance with this method brings the risk
-     * that someone may use both the old and the new allowance by unfortunate
-     * transaction ordering. One possible solution to mitigate this race
-     * condition is to first reduce the spender's allowance to 0 and set the
-     * desired value afterwards:
-     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-     *
-     * Emits an {Approval} event.
-     */
-    function approve(address spender, uint256 amount) external returns (bool);
-
-    /**
-     * @dev Moves `amount` tokens from `sender` to `recipient` using the
-     * allowance mechanism. `amount` is then deducted from the caller's
-     * allowance.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * Emits a {Transfer} event.
-     */
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
-
-    /**
-     * @dev Emitted when `value` tokens are moved from one account (`from`) to
-     * another (`to`).
-     *
-     * Note that `value` may be zero.
-     */
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    /**
-     * @dev Emitted when the allowance of a `spender` for an `owner` is set by
-     * a call to {approve}. `value` is the new allowance.
-     */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-}
+import "./IERC20.sol";
 
 // TODO: add events, revert messages
 contract BaseExchange is StandardToken {
     using SafeMath for *;
 
-    ERC20 public token1; // previously eth
-    ERC20 public token2;
+    IERC20 public token1; // previously eth
+    IERC20 public token2;
 
     uint public decimals = 18;
 
     constructor(address token1_, address token2_) public {
         require(token1_ != token2_);
-        token1 = ERC20(token1_);
-        token2 = ERC20(token2_);
+        token1 = IERC20(token1_);
+        token2 = IERC20(token2_);
     }
 
     function addLiquidity(
@@ -162,10 +92,10 @@ contract BaseExchange is StandardToken {
         // XXX do events
         return (token1_amount, token2_amount);
     }
-    event Print(uint a);
+
     function tokenSwapInput(
-        address input_token,
-        ERC20 output_token, 
+        IERC20 input_token,
+        IERC20 output_token, 
         uint tokens_sold, 
         uint min_tokens_bought, 
         uint deadline, 
@@ -176,26 +106,24 @@ contract BaseExchange is StandardToken {
         require(deadline >= block.timestamp);
         require(tokens_sold > 0);
         require(min_tokens_bought > 0);
-        // require(isExchange(input_token, output_token) == true, "Invalid token pair for this exchange");
+        require(isExchange(input_token, output_token) == true, "BaseExchange:: Invalid token pair for this exchange");
 
         uint input_token_reserve = input_token.balanceOf(address(this));
         uint output_token_reserve = output_token.balanceOf(address(this));
         uint tokens_bought = getInputPrice(tokens_sold, input_token_reserve, output_token_reserve);
 
         require(tokens_bought >= min_tokens_bought);
-        uint bal = IERC20(input_token).balanceOf(msg.sender);
-        emit Print(bal);
-        // require(input_token.transferFrom(msg.sender, address(this), tokens_sold));
-        // output_token.transfer(recipient, tokens_bought);
+        require(input_token.transferFrom(msg.sender, address(this), tokens_sold));
+        output_token.transfer(recipient, tokens_bought);
 
         return tokens_bought;
     }
 
     function tokenSwapOutput(
-        ERC20 input_token, 
-        ERC20 output_token, 
+        IERC20 input_token, 
+        IERC20 output_token, 
         uint tokens_bought, 
-        uint min_tokens_bought,
+        uint max_tokens_sold,
         uint deadline, 
         address recipient
     ) 
@@ -203,22 +131,22 @@ contract BaseExchange is StandardToken {
     {
         require(deadline >= block.timestamp);
         require(tokens_bought > 0);
-        require(min_tokens_bought > 0);
+        require(max_tokens_sold > 0);
         require(isExchange(input_token, output_token) == true, "BaseExchange:: Wrong exchange");
 
         uint input_token_reserve = input_token.balanceOf(address(this));
         uint output_token_reserve = output_token.balanceOf(address(this));
         uint tokens_sold = getOutputPrice(tokens_bought, input_token_reserve, output_token_reserve);
 
-        require(tokens_bought >= min_tokens_bought);
+        require(max_tokens_sold >= tokens_sold);
 
         input_token.transferFrom(msg.sender, address(this), tokens_sold);
         output_token.transfer(recipient, tokens_bought);
 
-        return tokens_bought;
+        return tokens_sold;
     }
 
-    function getInputPrice(uint input_amount, ERC20 input_token, ERC20 output_token) public view returns (uint) {
+    function getInputPrice(uint input_amount, IERC20 input_token, IERC20 output_token) public view returns (uint) {
         require(isExchange(input_token, output_token) == true, "BaseExchange:: Wrong exchange");
         
         uint input_token_reserve = input_token.balanceOf(address(this));
@@ -226,7 +154,7 @@ contract BaseExchange is StandardToken {
         return getInputPrice(input_amount, input_token_reserve, output_token_reserve);
     }
 
-    function getOutputPrice(uint output_amount, ERC20 input_token, ERC20 output_token) public view returns (uint) {
+    function getOutputPrice(uint output_amount, IERC20 input_token, IERC20 output_token) public view returns (uint) {
         require(isExchange(input_token, output_token) == true, "BaseExchange:: Wrong exchange");
         
         uint input_token_reserve = input_token.balanceOf(address(this));
@@ -235,14 +163,14 @@ contract BaseExchange is StandardToken {
     }
 
     // TODO: add fee
-    function flashBorrow(ERC20 borrow_token, uint borrow_amount, bytes memory data, address target) public {
-        uint prev_balance = ERC20(borrow_token).balanceOf(address(this));
-        ERC20(borrow_token).transfer(target, borrow_amount);
+    function flashBorrow(IERC20 borrow_token, uint borrow_amount, bytes memory data, address target) public {
+        uint prev_balance = borrow_token.balanceOf(address(this));
+        borrow_token.transfer(target, borrow_amount);
         target.call(data);
         require(borrow_token.balanceOf(address(this)) >= prev_balance);
     }
 
-    function isExchange(ERC20 token1_, ERC20 token2_) public view returns (bool) {
+    function isExchange(IERC20 token1_, IERC20 token2_) public view returns (bool) {
         return (token1 == token1_ && token2 == token2_) || (token2 == token1_ && token1 == token2_);
     }
 
