@@ -39,7 +39,7 @@ contract BasicToken is ERC20Basic {
     */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value <= balances[msg.sender]);
+        require(_value <= balances[msg.sender], "Transfer: insufficient balance");
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -101,8 +101,8 @@ contract StandardToken is ERC20, BasicToken {
         returns (bool)
     {
         require(_to != address(0));
-        require(_value <= balances[_from]);
-        require(_value <= allowed[_from][msg.sender]);
+        require(_value <= balances[_from], "TransferFrom: Inadequate balance");
+        require(_value <= allowed[_from][msg.sender], "TransferFrom: Inadequate allowance");
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
