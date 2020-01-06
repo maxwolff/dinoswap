@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "bignumber.js": "^9.0.0",
-    "eth-saddle": "^0.0.9"
+    "eth-saddle": "0.0.33",
+    "jest": "^24.9.0"
   },
   "scripts": {
     "t": "npx saddle test",

@@ -112,8 +112,9 @@ contract BaseExchange is StandardToken {
         uint output_token_reserve = output_token.balanceOf(address(this));
         uint tokens_bought = getInputPrice(tokens_sold, input_token_reserve, output_token_reserve);
 
-        require(tokens_bought >= min_tokens_bought);
-        require(input_token.transferFrom(msg.sender, address(this), tokens_sold));
+        require(tokens_bought >= min_tokens_bought, "BaseExchange:: Too few tokens bought");
+        
+        input_token.transferFrom(msg.sender, address(this), tokens_sold);
         output_token.transfer(recipient, tokens_bought);
 
         return tokens_bought;
@@ -126,7 +127,7 @@ contract BaseExchange is StandardToken {
         uint max_tokens_sold,
         uint deadline, 
         address recipient
-    ) 
+    )
         public returns (uint) 
     {
         require(deadline >= block.timestamp);
@@ -138,7 +139,7 @@ contract BaseExchange is StandardToken {
         uint output_token_reserve = output_token.balanceOf(address(this));
         uint tokens_sold = getOutputPrice(tokens_bought, input_token_reserve, output_token_reserve);
 
-        require(max_tokens_sold >= tokens_sold);
+        require(max_tokens_sold >= tokens_sold, "BaseExchange:: Too many tokens sold");
 
         input_token.transferFrom(msg.sender, address(this), tokens_sold);
         output_token.transfer(recipient, tokens_bought);
@@ -162,7 +163,7 @@ contract BaseExchange is StandardToken {
         return getOutputPrice(output_amount, input_token_reserve, output_token_reserve);
     }
 
-    // TODO: add fee
+    // TODO: add fee?
     function flashBorrow(IERC20 borrow_token, uint borrow_amount, bytes memory data, address target) public {
         uint prev_balance = borrow_token.balanceOf(address(this));
         borrow_token.transfer(target, borrow_amount);

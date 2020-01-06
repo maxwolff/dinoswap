@@ -21,23 +21,6 @@ contract ConstantProductExchange is BaseExchange {
         symbol = symbol_;
     }
 
-	function getOutputPrice(
-		uint output_amount,
-		uint input_reserve,
-		uint output_reserve
-	) 
-		internal view returns (uint)
-	{
-        // uncessecary checks?    
-        require(input_reserve > 0);
-        require(output_reserve > 0);
-
-        uint numerator = input_reserve.mul(output_reserve).mul(feePrecision);
-        uint denominator = output_reserve.sub(output_amount).mul(fee);
-
-        return numerator.div(denominator).add(1);
-    }
-
     function getInputPrice(
     	uint input_amount, 
     	uint input_reserve, 
@@ -55,4 +38,22 @@ contract ConstantProductExchange is BaseExchange {
 
         return numerator.div(denominator);
     }
+    
+	function getOutputPrice(
+		uint output_amount,
+		uint input_reserve,
+		uint output_reserve
+	) 
+		internal view returns (uint)
+	{
+        // uncessecary checks?    
+        require(input_reserve > 0);
+        require(output_reserve > 0);
+
+        uint numerator = input_reserve.mul(output_amount).mul(feePrecision);
+        uint denominator = output_reserve.sub(output_amount).mul(fee);
+
+        return numerator.div(denominator).add(1);
+    }
+
 }
