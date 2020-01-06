@@ -4,7 +4,6 @@ A stub of a Uniswap fork. Undeployed and missing test coverage.
 
 * Swap ERC20s for ERC20s
 * Flash borrowing
-* Custom fees and price formulas
 
 ## Installation
 
