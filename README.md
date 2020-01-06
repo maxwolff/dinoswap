@@ -1,17 +1,10 @@
-# 🦕 DINOSWAP 🦕
+# Dinoswap
 
-A minimal Uniswap fork.
+A stub of a Uniswap fork. Undeployed and missing test coverage.
 
 * Swap ERC20s for ERC20s
 * Flash borrowing
 * Custom fees and price formulas
-
-## TODO
-
-* Improve test coverage
-* Add contract for low-slippage [formula](https://devpost.com/software/squink) for stable pairs
-* Consider adding CToken accounting to keep reserves equal in value
-* Tests, events, etc
 
 ## Installation
 
@@ -20,6 +13,12 @@ A minimal Uniswap fork.
 * `yarn test`
 	* uses [eth-saddle](https://www.npmjs.com/package/eth-saddle) for testing
 * `yarn t` to test without recompiling
+
+## TODO
+
+* Add contract for low-slippage [formula](https://devpost.com/software/squink) for stable pairs
+* Consider adding CToken accounting to keep reserves equal in value
+* Tests, events, etc
 
 ## Model 
 
