@@ -1,6 +1,6 @@
 # Dinoswap
 
-A stub of a Uniswap fork. Undeployed and missing test coverage.
+A fork of [Uniswap](https://github.com/Uniswap/contracts-vyper) contracts. Stub: missing test coverage.
 
 * Swap ERC20s for ERC20s
 * Flash borrowing
@@ -22,4 +22,6 @@ A stub of a Uniswap fork. Undeployed and missing test coverage.
 
 ## Model 
 
-[https://docs.google.com/spreadsheets/d/19EGFSBu0Kc3cNImVGjqDADcTuG3giVwyHNgfRKgBFOE/edit#gid=0](model)
+[model](https://docs.google.com/spreadsheets/d/19EGFSBu0Kc3cNImVGjqDADcTuG3giVwyHNgfRKgBFOE/edit#gid=0)
+
+Contributions Welcome
